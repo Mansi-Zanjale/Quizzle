@@ -3,12 +3,13 @@ include 'components/connect.php';
 session_start();
 
 // Fetch users sorted by stars in descending order
-$fetch_leaderboard = $conn->prepare("SELECT username, stars, score FROM users ORDER BY stars DESC, score DESC");
+$fetch_leaderboard = $conn->prepare("SELECT username, stars, score FROM users ORDER BY stars DESC, score DESC LIMIT 10");
 $fetch_leaderboard->execute();
 $users = $fetch_leaderboard->fetchAll(PDO::FETCH_ASSOC);
 
 // Function to determine trophy image based on stars
-function getTrophy($stars) {
+function getTrophy($stars)
+{
     if ($stars >= 126) {
         return "images/platinum.png";
     } elseif ($stars >= 100) {
@@ -27,63 +28,70 @@ function getTrophy($stars) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaderboard</title>
+    <title>Leaderboard | Quizzle</title>
+    <meta name="description" content="See who’s leading on the Quizzle leaderboard. Compete for top scores and bragging rights!" />
+    <link rel="canonical" href="https://mansi-zanjale.github.io/leaderboard.php" />
+
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<header class="header">
-    <section class="flex">
-        <h1 class="user">Leaderboard</h1>
-        <nav class="navbar">
-            <a href="home.php">Home</a>
-            <a href="category.php">Category</a>
-            <a href="profile.php">Profile</a>
-        </nav>
-    </section>
-</header>
+    <header class="header">
+        <section class="flex">
+            <h1 class="user">Leaderboard</h1>
+            <div class="hamburger" onclick="toggleMenu()">≣</div>
+            <nav class="navbar">
+                <a href="category.php">Home</a>
+                <a href="category.php">Category</a>
+                <a href="profile.php">Profile</a>
+            </nav>
+        </section>
+    </header>
 
-<section id="leaderboard">
-    <h2>Top Players</h2>
+    <section id="leaderboard">
+        <h2>Top Players</h2>
 
-    <div id="leaderboard-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Rank</th>
-                    <th>Username</th>
-                    <th>Score</th>
-                    <th>Stars</th>
-                    <th>Trophy</th>
-                </tr>
-            </thead>
-            <tbody id="leaderboard-body">
-                <?php
-                $rank = 1;
-                foreach ($users as $user) {
-                    $trophy = getTrophy($user['stars']);
-                    echo "<tr>
+        <div id="leaderboard-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Username</th>
+                        <th>Score</th>
+                        <th>Stars</th>
+                        <th>Trophy</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                    <?php
+                    $rank = 1;
+                    foreach ($users as $user) {
+                        $trophy = getTrophy($user['stars']);
+                        echo "<tr>
                             <td>{$rank}</td>
                             <td>" . htmlspecialchars($user['username']) . "</td>
                             <td>" . htmlspecialchars($user['score']) . "</td>
-                            <td>" . str_repeat("⭐", min(5, $user['stars'])) . " ({$user['stars']})</td>
+                            <td>" . str_repeat("⭐", min(1, $user['stars'])) . " ({$user['stars']})</td>
                             <td>";
-                    if (!empty($trophy)) {
-                        echo "<img src='{$trophy}' alt='Trophy' width='50'>";
-                    } else {
-                        echo "No Trophy Yet";
+                        if (!empty($trophy)) {
+                            echo "<img src='{$trophy}' alt='Trophy' width='50'>";
+                        } else {
+                            echo "No Trophy Yet";
+                        }
+                        echo "</td></tr>";
+                        $rank++;
                     }
-                    echo "</td></tr>";
-                    $rank++;
-                }
-                ?>
-            </tbody>
-        </table>
-    </div>
-</section>
-
+                    ?>
+                </tbody>
+            </table>
+        </div>
+    </section>
+    <script src="js/script.js"></script>
 </body>
+
 </html>

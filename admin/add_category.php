@@ -73,65 +73,61 @@ if(isset($_GET['delete'])){
    }
 }
  
- ?>
+?>
 
 
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
+   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Category</title>
-    <link rel="stylesheet" href="../admin_style.css">
+    <title>Add Category | Admin Panel - Quizzle</title>
+    <meta name="robots" content="noindex, nofollow">
+   </head>
 
-</head>
-<body>
-<?php include 'admin_header.php'; ?>    
+   <body>
+     <?php include 'admin_header.php'; ?>    
 
-<section class="add-category">
+      <section class="add-category">
 
-   <form action="" method="POST" enctype="multipart/form-data">
-      <h3>add category</h3>
-      <input type="text" required placeholder="enter category name" name="name" maxlength="100" class="box">
-      <input type="file" name="image" class="box" accept="image/jpg, image/jpeg, image/png, image/webp" required>
-      <input type="submit" value="add category" name="add_category" class="btn">
-   </form>
+         <form action="" method="POST" enctype="multipart/form-data">
+           <h3>add category</h3>
+           <input type="text" required placeholder="enter category name" name="name" maxlength="100" class="box">
+           <input type="file" name="image" class="box" accept="image/jpg, image/jpeg, image/png, image/webp" required>
+           <input type="submit" value="add category" name="add_category" class="btn">
+         </form>
 
-</section>
+      </section>
 
+      <section class="show-category">
 
+         <div class="box-container">
+            <?php
+               $show_category = $conn->prepare("SELECT * FROM `category`");
+               $show_category->execute();
+               if($show_category->rowCount() > 0){
+                 while($fetch_category = $show_category->fetch(PDO::FETCH_ASSOC)){  
+            ?>
+            <div class="box">
+              <img src="../images/<?= $fetch_category['image']; ?>" alt="category">
+              <div class="name"><?= htmlspecialchars($fetch_category['name']); ?></div>
+              <div class="flex-btn">
+                 <a href="add_question.php?category=<?= urlencode($fetch_category['name']); ?>" class="option-btn">questions</a>
+                 <!-- updated above -->
+                 <a href="add_category.php?delete=<?= $fetch_category['id']; ?>" class="delete-btn" onclick="return confirm('sure you want to delete this category?');">delete</a>
+              </div>
+            </div>
+            <?php
+              }
+             }else{
+             echo '<p class="empty">no categories added yet!</p>';
+             }
+            ?>
 
+         </div>
 
-<section class="show-category">
+      </section>
 
-   <div class="box-container">
-
-   <?php
-      $show_category = $conn->prepare("SELECT * FROM `category`");
-      $show_category->execute();
-      if($show_category->rowCount() > 0){
-         while($fetch_category = $show_category->fetch(PDO::FETCH_ASSOC)){  
-   ?>
-   <div class="box">
-      <img src="../images/<?= $fetch_category['image']; ?>" alt="">
-      <div class="name"><?= htmlspecialchars($fetch_category['name']); ?></div>
-      <div class="flex-btn">
-         <a href="add_question.php?category=<?= urlencode($fetch_category['name']); ?>" class="option-btn">questions</a>
-         <!-- updated above -->
-         <a href="add_category.php?delete=<?= $fetch_category['id']; ?>" class="delete-btn" onclick="return confirm('sure you want to delete this category?');">delete</a>
-      </div>
-   </div>
-   <?php
-         }
-      }else{
-         echo '<p class="empty">no categories added yet!</p>';
-      }
-   ?>
-
-   </div>
-
-</section>
-
-</body>
+   </body>
 </html>
